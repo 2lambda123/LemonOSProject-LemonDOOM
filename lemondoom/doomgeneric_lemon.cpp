@@ -110,7 +110,7 @@ void DG_DrawFrame()
 	}
 
 	memcpy_optimized(window->surface.buffer, DG_ScreenBuffer, DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4);
-	_PaintWindow(window->handle, &window->surface);
+	SwapWindowBuffers(window);
 }
 
 void DG_SleepMs(uint32_t ms)
@@ -149,11 +149,9 @@ int DG_GetKey(int* pressed, unsigned char* doomKey)
 
 void DG_SetWindowTitle(const char * title)
 {
-	strcpy(windowInfo.title, title);
-
 	if(window){
-		_DestroyWindow(window->handle);
-		window->handle = _CreateWindow(&windowInfo);
+		strcpy(window->info.title, title);
+		UpdateWindow(window);
 	}
 }
 
