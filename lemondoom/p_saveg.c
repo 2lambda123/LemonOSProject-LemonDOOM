@@ -98,7 +98,7 @@ static byte saveg_read8(void)
 
 static void saveg_write8(byte value)
 {
-    if (fwrite(&value, 1, 1, save_stream) < 1)
+    /*if (fwrite(&value, 1, 1, save_stream) < 1)
     {
         if (!savegame_error)
         {
@@ -106,7 +106,7 @@ static void saveg_write8(byte value)
 
             savegame_error = true;
         }
-    }
+    }*/
 }
 
 static short saveg_read16(void)

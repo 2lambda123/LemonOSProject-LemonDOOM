@@ -448,6 +448,8 @@ void I_Error (char *error, ...)
                                         message,
                                         NULL);
     }
+#elif defined(__lemon__)
+    LemonMessageBox(msgbuf);
 #else
     {
         ZenityErrorBox(msgbuf);
@@ -459,7 +461,7 @@ void I_Error (char *error, ...)
     SDL_Quit();
 
     exit(-1);
-#else
+#else 
     while (true)
     {
     }

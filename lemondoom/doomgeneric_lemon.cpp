@@ -5,6 +5,8 @@
 #include <lemon/keyboard.h>
 #include <lemon/ipc.h>
 #include <ctype.h>
+#include <gfx/window/messagebox.h>
+#include <unistd.h>
 
 #define KEY_ARROW_UP 266
 #define KEY_ARROW_LEFT 267
@@ -15,11 +17,15 @@
 
 #define KEYQUEUE_SIZE 16
 
+#define KEY_SHIFT 270
+#define KEY_ALT 271
+#define KEY_CONTROL 272
+
 static unsigned short s_KeyQueue[KEYQUEUE_SIZE];
 static unsigned int s_KeyQueueWriteIndex = 0;
 static unsigned int s_KeyQueueReadIndex = 0;
 
-Window* window = nullptr;
+Lemon::GUI::Window* window = nullptr;
 win_info_t windowInfo;
 
 void memcpy_optimized(void* dest, void* src, size_t count);
@@ -51,14 +57,23 @@ static unsigned char convertToDoomKey(unsigned int key)
 	case KEY_ARROW_DOWN:
 		key = KEY_DOWNARROW;
 		break;
-	case /*KEY_CONTROL*/ 'z':
+	case KEY_CONTROL:
 		key = KEY_FIRE;
 		break;
 	case ' ':
 		key = KEY_USE;
 		break;
-	case /*KEY_SHIFT*/ 'x':
+	case KEY_SHIFT:
 		key = KEY_RSHIFT;
+		break;
+	case ',':
+		key = KEY_STRAFE_L;
+		break;
+	case '.':
+		key = KEY_STRAFE_R;
+		break;
+	case KEY_ALT:
+		key = KEY_LALT;
 		break;
 	default:
 		key = tolower(key);
@@ -79,6 +94,8 @@ static void addKeyToQueue(int pressed, unsigned int keyCode)
 	s_KeyQueueWriteIndex %= KEYQUEUE_SIZE;
 }
 
+size_t msAtBoot;
+
 void DG_Init()
 {
 	windowInfo.x = windowInfo.y = 50;
@@ -86,15 +103,22 @@ void DG_Init()
 	windowInfo.height = DOOMGENERIC_RESY;
 	strcpy(windowInfo.title, "LemonDOOM");
 
-	window = CreateWindow(&windowInfo);
+	window = Lemon::GUI::CreateWindow(&windowInfo);
 
 	memset(s_KeyQueue, 0, KEYQUEUE_SIZE * sizeof(unsigned short));
+
+	uint64_t seconds;
+	uint64_t ms;
+	syscall(SYS_UPTIME, &seconds, &ms, 0, 0, 0);
+	msAtBoot = seconds * 1000 + ms;
+
+	DG_ScreenBuffer = (uint32_t*)window->surface.buffer;
 }
 
 void DG_DrawFrame()
 {
 	ipc_message_t msg;
-	while(ReceiveMessage(&msg)){
+	while(Lemon::ReceiveMessage(&msg)){
 		switch(msg.msg){
 			case WINDOW_EVENT_KEY:
 				addKeyToQueue(1, msg.data);
@@ -110,12 +134,13 @@ void DG_DrawFrame()
 	}
 
 	memcpy_optimized(window->surface.buffer, DG_ScreenBuffer, DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4);
-	SwapWindowBuffers(window);
+	Lemon::GUI::SwapWindowBuffers(window);
+	DG_ScreenBuffer = (uint32_t*)window->surface.buffer;
 }
 
 void DG_SleepMs(uint32_t ms)
 {
-	syscall(SYS_NANO_SLEEP, ms * 1000000, 0, 0, 0, 0);
+	usleep(ms * 1000);
 }
 
 uint32_t DG_GetTicksMs()
@@ -151,8 +176,14 @@ void DG_SetWindowTitle(const char * title)
 {
 	if(window){
 		strcpy(window->info.title, title);
-		UpdateWindow(window);
+		Lemon::GUI::UpdateWindow(window);
 	}
+}
+
+void LemonMessageBox(char* msg){
+	//Lemon::GUI::MessageBox(msg, MESSAGEBOX_OK); Stay light on dependencies
+
+	printf("Error: %s", msg);
 }
 
 }

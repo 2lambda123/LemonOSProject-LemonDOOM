@@ -3,12 +3,10 @@
 
 #include <stdint.h>
 
-#define DOOMGENERIC_RESX 640
-#define DOOMGENERIC_RESY 400
-
+extern int DOOMGENERIC_RESX;
+extern int DOOMGENERIC_RESY;
 
 extern uint32_t* DG_ScreenBuffer;
-
 
 void DG_Init();
 void DG_DrawFrame();
