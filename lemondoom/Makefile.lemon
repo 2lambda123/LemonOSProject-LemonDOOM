@@ -13,10 +13,11 @@ endif
 
 
 CC=x86_64-lemon-gcc  # gcc or g++
+CXX=x86_64-lemon-g++
 CFLAGS=-ggdb3 -Os
 LDFLAGS+=-Wl,--gc-sections
 CFLAGS+=-g -Wall -DNORMALUNIX -DLEMON -DLINUX #-DSNDSERV -DUSEASM
-LIBS+=-lc -llemon
+LIBS+=-lc -llemon -lfreetype
 
 # subdirectory for objects
 OBJDIR=build
@@ -35,7 +36,7 @@ clean:
 
 $(OUTPUT):	$(OBJS)
 	@echo [Linking $@]
-	$(VB)$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) \
+	$(VB)$(CXX) $(CFLAGS) $(LDFLAGS) $(OBJS) \
 	-o $(OUTPUT) $(LIBS) -Wl,-Map,$(OUTPUT).map
 	@echo [Size]
 	-$(CROSS_COMPILE)size $(OUTPUT)
@@ -51,7 +52,7 @@ $(OBJDIR)/%.o:	%.c
 	
 $(OBJDIR)/%.o:	%.cpp
 	@echo [Compiling $<]
-	$(VB)$(CC) $(CFLAGS) -c $< -o $@
+	$(VB)$(CXX) $(CFLAGS) -c $< -o $@
 
 print:
 	@echo OBJS: $(OBJS)

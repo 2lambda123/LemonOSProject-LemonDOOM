@@ -1,11 +1,9 @@
 
 #include <stdio.h>
-#include <gfx/window/window.h>
+#include <gui/window.h>
 #include <lemon/syscall.h>
-#include <lemon/keyboard.h>
-#include <lemon/ipc.h>
+#include <core/keyboard.h>
 #include <ctype.h>
-#include <gfx/window/messagebox.h>
 #include <unistd.h>
 
 #define KEY_ARROW_UP 266
@@ -26,7 +24,6 @@ static unsigned int s_KeyQueueWriteIndex = 0;
 static unsigned int s_KeyQueueReadIndex = 0;
 
 Lemon::GUI::Window* window = nullptr;
-win_info_t windowInfo;
 
 void memcpy_optimized(void* dest, void* src, size_t count);
 
@@ -98,12 +95,7 @@ size_t msAtBoot;
 
 void DG_Init()
 {
-	windowInfo.x = windowInfo.y = 50;
-	windowInfo.width = DOOMGENERIC_RESX;
-	windowInfo.height = DOOMGENERIC_RESY;
-	strcpy(windowInfo.title, "LemonDOOM");
-
-	window = Lemon::GUI::CreateWindow(&windowInfo);
+	window = new Lemon::GUI::Window("LemonDOOM", {DOOMGENERIC_RESX, DOOMGENERIC_RESY});
 
 	memset(s_KeyQueue, 0, KEYQUEUE_SIZE * sizeof(unsigned short));
 
@@ -117,24 +109,23 @@ void DG_Init()
 
 void DG_DrawFrame()
 {
-	ipc_message_t msg;
-	while(Lemon::ReceiveMessage(&msg)){
-		switch(msg.msg){
-			case WINDOW_EVENT_KEY:
-				addKeyToQueue(1, msg.data);
+	Lemon::LemonEvent ev;
+	while(window->PollEvent(ev)){
+		switch(ev.event){
+			case Lemon::EventKeyPressed:
+				addKeyToQueue(1, ev.key);
 				break;
-			case WINDOW_EVENT_KEYRELEASED:
-				addKeyToQueue(0, msg.data);
+			case Lemon::EventKeyReleased:
+				addKeyToQueue(0, ev.key);
 				break;
-			case WINDOW_EVENT_CLOSE:
-				DestroyWindow(window);
+			case Lemon::EventWindowClosed:
+				delete window;
 				exit(0);
 				break;
 		}
 	}
 
-	memcpy_optimized(window->surface.buffer, DG_ScreenBuffer, DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4);
-	Lemon::GUI::SwapWindowBuffers(window);
+	window->SwapBuffers();
 	DG_ScreenBuffer = (uint32_t*)window->surface.buffer;
 }
 
@@ -175,14 +166,11 @@ int DG_GetKey(int* pressed, unsigned char* doomKey)
 void DG_SetWindowTitle(const char * title)
 {
 	if(window){
-		strcpy(window->info.title, title);
-		Lemon::GUI::UpdateWindow(window);
+		//
 	}
 }
 
 void LemonMessageBox(char* msg){
-	//Lemon::GUI::MessageBox(msg, MESSAGEBOX_OK); Stay light on dependencies
-
 	printf("Error: %s", msg);
 }
 
