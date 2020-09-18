@@ -48,9 +48,11 @@ static unsigned char convertToDoomKey(unsigned int key)
 	case KEY_ARROW_RIGHT:
 		key = KEY_RIGHTARROW;
 		break;
+    case 'w':
 	case KEY_ARROW_UP:
 		key = KEY_UPARROW;
 		break;
+    case 's':
 	case KEY_ARROW_DOWN:
 		key = KEY_DOWNARROW;
 		break;
@@ -63,10 +65,12 @@ static unsigned char convertToDoomKey(unsigned int key)
 	case KEY_SHIFT:
 		key = KEY_RSHIFT;
 		break;
-	case ',':
+	case 'a':
+    case ',':
 		key = KEY_STRAFE_L;
 		break;
-	case '.':
+    case '.':
+	case 'd':
 		key = KEY_STRAFE_R;
 		break;
 	case KEY_ALT:

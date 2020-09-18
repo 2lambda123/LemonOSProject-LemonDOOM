@@ -1314,7 +1314,10 @@ void D_DoomMain (void)
     }
     else
 #endif
+    if ( (p = M_CheckParmWithArgs("-savedir", 1) ) )
     {
+        M_SetConfigDir(myargv[p + 1]);
+    } else {
         // Auto-detect the configuration dir.
 
         M_SetConfigDir(NULL);
