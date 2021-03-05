@@ -12,8 +12,8 @@ else
 endif
 
 
-CC=x86_64-lemon-gcc  # gcc or g++
-CXX=x86_64-lemon-g++
+CC=lemon-clang  # gcc or g++
+CXX=lemon-clang++
 CFLAGS=-ggdb3 -Os
 LDFLAGS+=-Wl,--gc-sections
 CFLAGS+=-g -Wall -DNORMALUNIX -DLEMON -DLINUX #-DSNDSERV -DUSEASM

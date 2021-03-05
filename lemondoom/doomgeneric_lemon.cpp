@@ -1,8 +1,8 @@
 
 #include <stdio.h>
-#include <gui/window.h>
+#include <Lemon/GUI/Window.h>
 #include <lemon/syscall.h>
-#include <core/keyboard.h>
+#include <Lemon/Core/Keyboard.h>
 #include <ctype.h>
 #include <unistd.h>
 
