@@ -17,7 +17,7 @@ CXX=lemon-clang++
 CFLAGS=-ggdb3 -Os
 LDFLAGS+=-Wl,--gc-sections
 CFLAGS+=-g -Wall -DNORMALUNIX -DLEMON -DLINUX #-DSNDSERV -DUSEASM
-LIBS+=-lc -llemon -lfreetype
+LIBS+=-lc -llemongui -llemon -lfreetype 
 
 # subdirectory for objects
 OBJDIR=build
@@ -52,7 +52,7 @@ $(OBJDIR)/%.o:	%.c
 	
 $(OBJDIR)/%.o:	%.cpp
 	@echo [Compiling $<]
-	$(VB)$(CXX) $(CFLAGS) -c $< -o $@
+	$(VB)$(CXX) $(CFLAGS) -std=c++17 -c $< -o $@
 
 print:
 	@echo OBJS: $(OBJS)
