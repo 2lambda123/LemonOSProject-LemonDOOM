@@ -28,8 +28,8 @@ Lemon::GUI::Window* window = nullptr;
 void memcpy_optimized(void* dest, void* src, size_t count);
 
 extern "C"{
-#include "doomkeys.h"
 
+#include "doomkeys.h"
 #include "doomgeneric.h"
 
 static unsigned char convertToDoomKey(unsigned int key)
@@ -113,6 +113,8 @@ void DG_Init()
 
 void DG_DrawFrame()
 {
+	Lemon::WindowServer::Instance()->Poll();
+
 	Lemon::LemonEvent ev;
 	while(window->PollEvent(ev)){
 		switch(ev.event){
@@ -170,7 +172,7 @@ int DG_GetKey(int* pressed, unsigned char* doomKey)
 void DG_SetWindowTitle(const char * title)
 {
 	if(window){
-		//
+		window->SetTitle(title);
 	}
 }
 
