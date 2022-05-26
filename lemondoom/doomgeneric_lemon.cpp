@@ -142,10 +142,9 @@ void DG_SleepMs(uint32_t ms)
 
 uint32_t DG_GetTicksMs()
 {
-	uint64_t seconds;
-	uint64_t ms;
-	syscall(SYS_UPTIME, &seconds, &ms, 0, 0, 0);
-	return seconds * 1000 + ms;
+	uint64_t nanos;
+	syscall(SYS_UPTIME, &nanos);
+	return nanos / 1000000;
 }
 
 int DG_GetKey(int* pressed, unsigned char* doomKey)
